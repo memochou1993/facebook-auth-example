@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="info" ></div>
+    <button id="login">Login</button>
+    <button id="logout" hidden>Logout</button>
+    <script>
+      window.fbAsyncInit = function () {
+        FB.init({
+          appId: "9368643076536346",
+          cookie: true,
+          version: "v22.0",
+        });
+        FB.AppEvents.logPageView();
+      };
+
+      (function (d, s, id) {
+        var js,
+          fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {
+          return;
+        }
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+      })(document, "script", "facebook-jssdk");
+
+      const loginElement = document.getElementById("login");
+      const logoutElement = document.getElementById("logout");
+      const infoElement = document.getElementById("info");
+
+      loginElement.addEventListener("click", function () {
+        FB.login(
+          function (response) {
+            if (!response.authResponse) {
+              console.log("User cancelled login or did not fully authorize.");
+              return;
+            }
+
+            FB.api("/me", function (response) {
+              infoElement.innerHTML = `Good to see you, ${response.name}.`;
+            });
+
+            logoutElement.hidden = false;
+            loginElement.hidden = true;
+          },
+          {
+            scope: "public_profile,email",
+          }
+        );
+      });
+
+      logoutElement.addEventListener("click", function () {
+        FB.logout(function () {
+          infoElement.innerHTML = "Goodbye!";
+          loginElement.hidden = false;
+          logoutElement.hidden = true;
+        });
+      });
+    </script>
+  </body>
+</html>
